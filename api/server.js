@@ -3,14 +3,11 @@
 const express = require('express');
 const { generate } = require('shortid');
 const dbFunctions = require('./users/model');
-console.log(dbFunctions)
-
-
 
 const app = express();
 app.use(express.json())
 
-
+//[POST] Creates a user using the information sent inside the request body.
     app.post("/api/users", (req,res) => {
     console.log("this is the re", req.body)
     const user = req.body    
@@ -21,18 +18,33 @@ app.use(express.json())
         .then( user => {
             res.status(201).json(user) //do we need to return new user with id?
         })
-        .catch(res.status(500).json({message: "There was an error while saving the user to the database"}))
+        .catch(err => res.status(500).json({message: err, message2: "There was an error while saving the user to the database"}))
     }
 })
 
+// [GET] Returns an array users.
+app.get("/api/users", (req, res) => {
+    dbFunctions.find()
+    .then(users => {
+        // console.log(users)
+        res.status(200).json({users:users})
+    })
+    .catch(err => res.status(500).json(err))
+})
 
-// app.get("/",(req, res) => {
-//     dbFunctions.find()
-//     .then(users => {
-//         res.json(users)
-//     })
-//     .catch(res.status(500).json({message:"error"}))
-// })
+//[GET] Returns the user object with the specified id.
+app.get("/api/users/:id", (req, res) => {
+    const user = req.params.id 
+    dbFunctions.findById(user)
+    .then(user => {
+        if(!user){
+            res.status(404).json({message: "The user ID does not exist"})
+         }else{ 
+            res.status(200).json(user)  
+         }
+    })
+    .catch(err => res.status(500).json(err))
+})
 
 
 

@@ -27,7 +27,7 @@ app.get("/api/users", (req, res) => {
     dbFunctions.find()
     .then(users => {
         // console.log(users)
-        res.status(200).json({users:users})
+        res.status(200).json(users)
     })
     .catch(err => res.status(500).json(err))
 })
@@ -46,7 +46,35 @@ app.get("/api/users/:id", (req, res) => {
     .catch(err => res.status(500).json(err))
 })
 
+//[DELETE] Removes the user with the specified id and returns the deleted user.
 
+app.delete("/api/users/:id", (req, res) => {
+    const user = req.params.id
+    dbFunctions.remove(user)
+    .then(user => {
+        if(!user){
+            res.status(404).json({message: "The user ID does not exist"})
+        }else{
+            res.status(200).json(user)
+        }
+        })
+    .catch(err => res.status(500).json(err))
+
+})
+
+//[PUT]Updates the user with the specified id using data from the request body. Returns the modified user
+app.put("/api/users/:id", (req, res) => {
+    const user = req.params.id
+    dbFunctions.update(user)
+    .then(user => {
+        if(!user){
+            res.status(404).json({message: "The user ID does not exist"})
+        }else{
+            res.status(200).json(user)
+        }
+    })
+    .catch(err => res.status(500).json(err))
+})
 
 
 app.use("*", (req, res) => {
